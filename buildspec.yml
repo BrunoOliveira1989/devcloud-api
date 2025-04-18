@@ -9,8 +9,6 @@ env:
     SERVICE_NAME: devcloud-service
     TASK_FAMILY: devcloud-task
 
-  privileged: true
-
 phases:
   pre_build:
     commands:
