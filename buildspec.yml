@@ -15,7 +15,6 @@ phases:
       - $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 136508419156.dkr.ecr.$AWS_REGION.amazonaws.com)
       - export REPOSITORY_URI=136508419156.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - echo 📦 URI do repositório: $REPOSITORY_URI
-      - echo Definindo variáveis de ambiente para a Task Definition...
 
   build:
     commands:
