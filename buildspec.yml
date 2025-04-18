@@ -14,38 +14,32 @@ env:
 phases:
   pre_build:
     commands:
-      - echo 🔐 Fazendo login no Amazon ECR...
+      - echo "🔐 Fazendo login no Amazon ECR..."
       - $(aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 136508419156.dkr.ecr.$AWS_REGION.amazonaws.com)
       - export REPOSITORY_URI=136508419156.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME
-      - echo 📦 URI do repositório: $REPOSITORY_URI
+      - echo "📦 URI do repositório: $REPOSITORY_URI"
 
   build:
     commands:
-      - echo 🔧 Construindo a imagem Docker...
+      - echo "🔧 Construindo a imagem Docker..."
       - docker build -t $IMAGE_REPO_NAME .
       - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $REPOSITORY_URI:$IMAGE_TAG
 
   post_build:
     commands:
-      - echo 📤 Enviando a imagem para o ECR...
+      - echo "📤 Enviando a imagem para o ECR..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG
-
-      - echo 📄 Obtendo definição de tarefa atual...
+      - echo "📄 Obtendo definição de tarefa atual..."
       - TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition $TASK_FAMILY)
-
-      - echo 🛠️ Criando nova definição com a nova imagem...
+      - echo "🛠️ Criando nova definição com a nova imagem..."
       - NEW_TASK_DEF=$(echo $TASK_DEFINITION_JSON | jq --arg IMAGE "$REPOSITORY_URI:$IMAGE_TAG" '.taskDefinition | {family, executionRoleArn, networkMode, containerDefinitions, requiresCompatibilities, cpu, memory} | .containerDefinitions[0].image = $IMAGE')
-
-      - echo 💾 Salvando a nova task definition em arquivo temporário...
+      - echo "💾 Salvando a nova task definition em arquivo temporário..."
       - echo "$NEW_TASK_DEF" > new-task-def.json
-
-      - echo 📝 Registrando a nova revisão da task definition...
+      - echo "📝 Registrando a nova revisão da task definition..."
       - TASK_REVISION=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
-
-      - echo 🚀 Atualizando o serviço ECS com a nova task...
+      - echo "🚀 Atualizando o serviço ECS com a nova task..."
       - aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $TASK_REVISION
-
-      - echo ✅ Deploy finalizado com sucesso!
+      - echo "✅ Deploy finalizado com sucesso!"
 
 artifacts:
   files: []
