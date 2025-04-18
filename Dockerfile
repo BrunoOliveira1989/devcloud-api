@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copia os arquivos de dependências primeiro para usar o cache do Docker
 COPY package*.json tsconfig.json ./
-##COPY .env .env
+#COPY .env .env
 COPY ./src ./src
 
 # Instala dependências e compila o projeto
@@ -21,7 +21,7 @@ WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY package.json ./
-COPY --from=builder /app/.env .env
+#COPY --from=builder /app/.env .env
 
 # Define a variável de ambiente
 ENV NODE_ENV=production
