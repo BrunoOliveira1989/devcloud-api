@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copia os arquivos de dependências primeiro para usar o cache do Docker
 COPY package*.json tsconfig.json ./
-COPY .env .env
+##COPY .env .env
 COPY ./src ./src
 
 # Instala dependências e compila o projeto
