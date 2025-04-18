@@ -11,9 +11,7 @@ phases:
   pre_build:
     commands:
       - echo 🔐 Fazendo login no Amazon ECR...
-      - |
-        aws ecr get-login-password --region $AWS_REGION | \
-        docker login --username AWS --password-stdin 939931250967.dkr.ecr.$AWS_REGION.amazonaws.com
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 939931250967.dkr.ecr.$AWS_REGION.amazonaws.com
       - export REPOSITORY_URI=939931250967.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME
       - echo 📦 URI do repositório: $REPOSITORY_URI
 
