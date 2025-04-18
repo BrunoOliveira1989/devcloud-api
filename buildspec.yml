@@ -2,14 +2,14 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_REPO_NAME: devcloud-ecr          # Nome do repositório no ECR
-    IMAGE_TAG: latest                      # Tag da imagem
-    AWS_REGION: sa-east-1                  # Região AWS (sa-east-1 para Brasil)
-    CLUSTER_NAME: devcloud-cluster         # Nome do Cluster ECS
-    SERVICE_NAME: devcloud-service         # Nome do Serviço ECS
-    TASK_FAMILY: devcloud-task             # Nome da Task Definition no ECS
+    IMAGE_REPO_NAME: devcloud-ecr
+    IMAGE_TAG: latest
+    AWS_REGION: sa-east-1
+    CLUSTER_NAME: devcloud-cluster
+    SERVICE_NAME: devcloud-service
+    TASK_FAMILY: devcloud-task
 
-  privileged: true  # Necessário para rodar Docker no CodeBuild
+  privileged: true
 
 phases:
   pre_build:
@@ -34,17 +34,7 @@ phases:
       - TASK_DEFINITION_JSON=$(aws ecs describe-task-definition --task-definition $TASK_FAMILY)
 
       - echo 🛠️ Criando nova definição com a nova imagem...
-      - NEW_TASK_DEF=$(echo $TASK_DEFINITION_JSON | jq --arg IMAGE "$REPOSITORY_URI:$IMAGE_TAG" '
-          .taskDefinition | {
-            family,
-            executionRoleArn,
-            networkMode,
-            containerDefinitions,
-            requiresCompatibilities,
-            cpu,
-            memory
-          } | .containerDefinitions[0].image = $IMAGE
-        ')
+      - NEW_TASK_DEF=$(echo $TASK_DEFINITION_JSON | jq --arg IMAGE "$REPOSITORY_URI:$IMAGE_TAG" '.taskDefinition | {family, executionRoleArn, networkMode, containerDefinitions, requiresCompatibilities, cpu, memory} | .containerDefinitions[0].image = $IMAGE')
 
       - echo 💾 Salvando a nova task definition em arquivo temporário...
       - echo "$NEW_TASK_DEF" > new-task-def.json
