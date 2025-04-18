@@ -18,20 +18,14 @@ phases:
 
   build:
     commands:
-      - echo 🚀 Build da imagem Docker...
+      - echo 🛠️ Construindo a imagem Docker...
       - docker build -t $REPOSITORY_URI:latest .
       - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - echo 📤 Enviando imagem para o ECR...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
 
   post_build:
     commands:
-      - echo 📋 Atualizando a Task Definition do ECS...
-      - ecs_task_definition=$(aws ecs register-task-definition \
-          --family $TASK_DEFINITION \
-          --container-definitions "[{\"name\":\"devcloud-container\",\"image\":\"$REPOSITORY_URI:latest\",\"memory\":512,\"cpu\":256,\"essential\":true,\"portMappings\":[{\"containerPort\":80,\"hostPort\":80}]}]" \
-          --query 'taskDefinition.taskDefinitionArn' --output text)
-      - echo Tarefa registrada: $ecs_task_definition
-      - echo 🎯 Atualizando o serviço ECS...
-      - aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $ecs_task_definition
+      - echo 🚀 Realizando o deploy no ECS...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region $AWS_REGION
+
