@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                          // Especifica a versão do JavaScript que o TypeScript vai gerar
+    "module": "CommonJS",                         // O TypeScript vai gerar módulos no formato CommonJS
+    "lib": ["ES2020", "DOM"],                     // Incluir as bibliotecas necessárias (ES2020 e DOM)
+    "allowJs": false,                             // Impede o uso de arquivos JS no projeto
+    "outDir": "./dist",                           // A pasta onde os arquivos compilados serão gerados
+    "rootDir": "./src",                           // A pasta raiz dos arquivos de código fonte
+    "strict": true,                               // Ativa as verificações de tipos mais rigorosas
+    "moduleResolution": "node",                   // Usa a resolução de módulos do Node.js
+    "esModuleInterop": true,                      // Permite importações de módulos CommonJS com sintaxe ES
+    "forceConsistentCasingInFileNames": true,     // Garante que os nomes de arquivos sejam consistentes
+    "skipLibCheck": true,                         // Ignora a verificação de tipos nas bibliotecas
+    "resolveJsonModule": true,                    // Permite a importação de arquivos JSON como módulos
+    "types": ["node", "express"]                  // Adiciona as definições de tipos para Node.js e Express
+  },
+  "include": ["src/**/*"],                        // Inclui todos os arquivos dentro de src/
+  "exclude": ["node_modules", "dist"]             // Exclui node_modules e dist
+}
