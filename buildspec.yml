@@ -20,8 +20,10 @@ phases:
     commands:
       - echo "Fazendo push da imagem Docker para o Amazon ECR..."
       - docker push $REPOSITORY_URI:$IMAGE_TAG  # Push usando a tag 'latest'
+      - echo "Atualizando o serviço do ECS..."
+      - aws ecs update-service --cluster devcloud-cluster --service devcloud-service --force-new-deployment
       - echo "Gerando o arquivo imagedefinitions.json para o CodePipeline..."
-      - printf '[{"name":"devcloud-ecs","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"devcloud-task","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
   files:
