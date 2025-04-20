@@ -22,11 +22,9 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG  # Push usando a tag 'latest'
       - echo "Atualizando o serviço do ECS..."
       - aws ecs update-service --cluster devcloud-ecs --service devcloud-service --force-new-deployment
+      - aws ecs update-service --cluster devcloud-ecs --service devcloud-service --force-new-deployment
       - echo "Gerando o arquivo imagedefinitions.json para o CodePipeline..."
       - printf '[{"name":"devcloud-task","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - echo "Parando a tarefa antiga..."
-      - aws ecs update-service --cluster devcloud-ecs --service devcloud-service --desired-count 0  # Diminui o número de tarefas para zero
-      - aws ecs update-service --cluster devcloud-ecs --service devcloud-service --desired-count 1  # Depois reinicia com a nova versão
 
 artifacts:
   files:
