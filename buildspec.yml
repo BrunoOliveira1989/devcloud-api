@@ -1,29 +1,28 @@
 version: 0.2
 
-env:
-  variables:
-    AWS_REGION: sa-east-1
-    IMAGE_REPO_NAME: devcloud-ecr
-    CLUSTER_NAME: devcloud-ecs
-    SERVICE_NAME: devcloud-service
-
 phases:
   pre_build:
     commands:
-      - echo 🔐 Fazendo login no Amazon ECR...
-      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 939931250967.dkr.ecr.$AWS_REGION.amazonaws.com
-      - export REPOSITORY_URI=939931250967.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_REPO_NAME
-      - echo 📦 URI do repositório: $REPOSITORY_URI
+      - echo "Fazendo login no Amazon ECR..."
+      - aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 136508419156.dkr.ecr.sa-east-1.amazonaws.com
+      - REPOSITORY_URI=136508419156.dkr.ecr.sa-east-1.amazonaws.com/devcloud-ecr
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
   build:
     commands:
-      - echo 🛠️ Construindo a imagem Docker...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo "Instalando dependências e compilando o projeto..."
+      - npm install
+      - npm run build
+      - echo "Construindo a imagem Docker..."
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
 
   post_build:
     commands:
-      - echo 🚀 Realizando o deploy no ECS...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region $AWS_REGION
+      - echo "Fazendo push da imagem Docker para o Amazon ECR..."
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo "Gerando o arquivo imagedefinitions.json para o CodePipeline..."
+      - printf '[{"name":"devcloud-ecs","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
