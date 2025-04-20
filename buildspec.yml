@@ -6,7 +6,7 @@ phases:
       - echo "Fazendo login no Amazon ECR..."
       - aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 136508419156.dkr.ecr.sa-east-1.amazonaws.com
       - REPOSITORY_URI=136508419156.dkr.ecr.sa-east-1.amazonaws.com/devcloud-ecr
-      - IMAGE_TAG=latest  # Modificado para sempre usar 'latest'
+      - IMAGE_TAG=latest
 
   build:
     commands:
