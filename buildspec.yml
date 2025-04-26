@@ -6,7 +6,7 @@ phases:
       - echo "Fazendo login no Amazon ECR..."
       - aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 136508419156.dkr.ecr.sa-east-1.amazonaws.com
       - REPOSITORY_URI=136508419156.dkr.ecr.sa-east-1.amazonaws.com/devcloud-ecr
-      - IMAGE_TAG=latest  # Garantindo que seja sempre 'latest'
+      - IMAGE_TAG=latest  
 
   build:
     commands:
@@ -14,12 +14,11 @@ phases:
       - npm install
       - npm run build
       - echo "Construindo a imagem Docker com a tag latest..."
-      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .  # Tag 'latest' explícita
-
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .  
   post_build:
     commands:
       - echo "Fazendo push da imagem Docker para o Amazon ECR..."
-      - docker push $REPOSITORY_URI:$IMAGE_TAG  # Push usando a tag 'latest'
+      - docker push $REPOSITORY_URI:$IMAGE_TAG  
       - echo "Atualizando o serviço do ECS..."
       - aws ecs update-service --cluster devcloud-ecs --service devcloud-service --force-new-deployment
       - aws ecs update-service --cluster devcloud-ecs --service devcloud-service --force-new-deployment
